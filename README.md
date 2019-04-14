@@ -27,6 +27,10 @@ or you can execute the Java file:
     
 *1.3.0 represents the application version and is changing with each update. Feel free to rename the file to winthing.exe to keep the same name.*
 
+### Tray icon, console
+
+After launching a tray icon will appear on the taskbar. You can click on the icon to open console log or you can quit WinThing.
+
 ## Configuration
 
 Configuration parameters can be passed from command line or they can be placed in configuration files in the working directory from where you launch WinThing.
