@@ -18,8 +18,8 @@ public class SystemCommander {
     public static final String ConfigFile = "winthing.ini";
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
+    private final Map<String, String> whitelist = new HashMap<String, String>();
     private boolean isEnabled = false;
-    private Map<String, String> whitelist = new HashMap<String, String>();
 
     public boolean isEnabled() {
         return isEnabled;

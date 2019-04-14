@@ -34,7 +34,7 @@ import javax.swing.JTextArea;
 public class WindowGui extends JFrame {
     private final String appName;
     private final String appVersion;
-    private Map<Integer, Component> components = new HashMap<Integer, Component>();
+    private final Map<Integer, Component> components = new HashMap<Integer, Component>();
 
     public enum Gui {
         TEXTAREA(0),
