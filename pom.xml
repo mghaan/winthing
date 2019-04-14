@@ -3,7 +3,7 @@
 
     <groupId>com.fatico</groupId>
     <artifactId>winthing</artifactId>
-    <version>1.4.1</version>
+    <version>1.4.2</version>
 
     <name>WinThing</name>
     <description>Remotely control Windows through MQTT.</description>
