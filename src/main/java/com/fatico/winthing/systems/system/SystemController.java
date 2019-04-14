@@ -20,10 +20,11 @@ public class SystemController extends BaseController {
     private final SystemCommander systemCommander;
 
     @Inject
-    public SystemController(final Registry registry, final SystemService systemService)
-            throws SystemException {
+    public SystemController(final Registry registry, final SystemService systemService,
+            final SystemCommander systemCommander) throws SystemException {
         super("system");
         this.systemService = Objects.requireNonNull(systemService);
+        this.systemCommander = Objects.requireNonNull(systemCommander);
         registry.queueInitialMessage(
             makeMessage(
                 "online",
@@ -47,7 +48,6 @@ public class SystemController extends BaseController {
         registry.subscribe(prefix + "commands/open", this::open);
         registry.subscribe(prefix + "commands/run", this::run);
 
-        systemCommander = new SystemCommander();
         systemCommander.parseConfig();
     }
 

@@ -9,6 +9,7 @@ public class Module extends PrivateModule {
     protected void configure() {
         bind(SystemService.class).in(Singleton.class);
         bind(SystemController.class).asEagerSingleton();
+        bind(SystemCommander.class).in(Singleton.class);
         expose(SystemService.class);
     }
 
