@@ -8,4 +8,5 @@ public abstract class Settings {
     public static final String CLIENT_ID = "clientid";
     public static final String TOPIC_PREFIX = "prefix";
     public static final String RECONNECT_INTERVAL = "reconnect";
+    public static final String NETWORK_PORT = "port";
 }
