@@ -1,5 +1,7 @@
 # Release notes
 
+- `/system/online` topic is available when running on any OS (not only on Windows)
+
 ## 1.4.1
 
 - Fix winthing.ini whitelist file and command execution
