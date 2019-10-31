@@ -25,22 +25,7 @@ public class SystemController extends BaseController {
         super("system");
         this.systemService = Objects.requireNonNull(systemService);
         this.systemCommander = Objects.requireNonNull(systemCommander);
-        registry.queueInitialMessage(
-            makeMessage(
-                "online",
-                new JsonPrimitive(true),
-                QualityOfService.AT_LEAST_ONCE,
-                true
-            )
-        );
-        registry.setWill(
-            makeMessage(
-                "online",
-                new JsonPrimitive(false),
-                QualityOfService.AT_LEAST_ONCE,
-                true
-            )
-        );
+
         registry.subscribe(prefix + "commands/shutdown", this::shutdown);
         registry.subscribe(prefix + "commands/suspend", this::suspend);
         registry.subscribe(prefix + "commands/hibernate", this::hibernate);

@@ -26,6 +26,9 @@ public class ApplicationModule extends AbstractModule {
         bind(Gson.class).in(Singleton.class);
 
         install(new MessagingModule());
+
+        install(new com.fatico.winthing.systems.online.Module());
+
         if (System.getProperty("os.name").toLowerCase().contains("win")) {
             install(new WindowsModule());
             install(new com.fatico.winthing.systems.system.Module());

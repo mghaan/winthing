@@ -17,7 +17,7 @@ Maven is required to build Java application. For convenience the Maven build fil
 
 ## Running
 
-Download the Windows executable and run it: 
+Download the Windows executable, create `winthing.conf` in the same directory, then run .exe file: 
 
 	winthing-1.3.0.exe
 	
@@ -35,14 +35,14 @@ After launching a tray icon will appear on the taskbar. You can click on the ico
 
 Configuration parameters can be passed from command line or they can be placed in configuration files in the working directory from where you launch WinThing.
 
-<table>
-<tr><th>Property</th><th>Description</th><th>Default</th>
-<tr><td>broker</td><td>URL of the MQTT broker to use</td><td>127.0.0.1:1883</td></tr>
-<tr><td>username</td><td>Username used when connecting to MQTT broker</td><td>mqtt</td></tr>
-<tr><td>password</td><td>Password used when connecting to MQTT broker</td><td>mqtt</td></tr>
-<tr><td>clientid</td><td>Client ID to present to the broker</td><td>WinThing</td></tr>
-<tr><td>reconnect</td><td>Time interval between connection attempts in seconds</td><td>5</td></tr>
-</table>
+| Property   | Description | Default |
+|------------|-------------|---------|
+| `broker`   | `host` or `host:port` (if port is not 1883) to connect to MQTT broker | 127.0.0.1:1883 |
+| `username` | Username used when connecting to MQTT broker | mqtt |
+| `password` | Password used when connecting to MQTT broker | mqtt |
+| `clientid` | Client ID to present to the broker | WinThing |
+| `reconnect`| Time interval between connection attempts in seconds | 5 |
+| `prefix`   | Topic prefix | winthing |
 
 ### Command line parameters
 
@@ -73,7 +73,7 @@ Example file:
 	
 ## Logging
 
-You can open application log by clicking on the tray icon. To log into **winthing.log** file in the current working directory run WinThing with the **-debug** parameter.
+You can open application log by clicking on the tray icon. To log into `winthing.log` file in the current working directory run WinThing with the `-debug` parameter.
 
 	winthing.exe -debug
 
@@ -89,96 +89,50 @@ Example valid message payloads:
 * `[1024, 768]`
 * `["notepad.exe", "C:\\file.txt", "C:\\"]` (note that JSON string requires escaped backslash)
 
-### Broadcast status
+### Topics broadcasted by WinThing
 
-#### System
-
-**Topic:** winthing/system/online<br>
-**Payload:** state:boolean<br>
-**QoS:** 2<br>
- **Persistent:** yes<br>
+| Topic | Value | Properties |
+|-------|-------|------------|
+| `winthing/system/online` | `true`/`false` | QoS 2, Persistent
  
-True when WinThing is running, false otherwise. WinThing registers a "last will" message with the broker to notify clients when WinThing disconnects.
+`true` when WinThing is running, `false` otherwise. 
 
-### Commands
+WinThing registers a "last will" message with the broker ensure it is set to `false` when WinThing disconnects.
+
+### Topics to trigger WinThing actions
 
 #### System
 
-**Topic:** winthing/system/commands/shutdown<br>
-**Payload:** -
+| Topic | Payload | Action |
+|-------|---------|--------|
+| `winthing/system/commands/shutdown`  | - | Shut down computer |
+| `winthing/system/commands/reboot`    | - | Reboot computer |
+| `winthing/system/commands/suspend`   | - | Put computer to sleep |
+| `winthing/system/commands/hibernate` | - | Hibernate computer |
+| `winthing/system/commands/open`      | uri:string | Open an URI, like a website in a browser or a disk location in a file browser. |
+| `winthing/system/commands/run`       | [command:string, arguments:string, workingDirectory:string] | Run a command. Arguments and working directory are optional (empty string and null by default).<br> |
 
-Trigger immediate system shutdown.
-
----
-
-**Topic:** winthing/system/commands/reboot<br>
-**Payload:** -
-
-Trigger immediate system reboot.
-
----
-
-**Topic:** winthing/system/commands/suspend<br>
-**Payload:** -
-
-Trigger immediate system suspend.
-
----
-
-**Topic:** winthing/system/commands/hibernate<br> 
-**Payload:** -
-
-Trigger immediate system hibernate.
-
----
-
-**Topic:** winthing/system/commands/run<br>
-**Payload:** [command:string, arguments:string, workingDirectory:string]
-
-Run a command. Arguments and working directory are optional (empty string and null by default).<br>
 If whitelist is enabled, only the command as unique identifier is required. The identifier is checked against the whitelist file (see **whitelist.ini** above).
-
----
-
-**Topic:** winthing/system/commands/open<br>
-**Payload:** uri:string
-
-Opens an URI, like a website in a browser or a disk location in a file browser.
 
 #### Desktop
 
-**Topic:** winthing/desktop/commands/close_active_window<br>
-**Payload:** -
-
-Closes currently active window.
-
----
-
-**Topic:** winthing/desktop/commands/set_display_sleep<br>
-**Payload:** displaySleep:boolean
-
-Puts the display to sleep (on true) or wakes it up (on false).
+| Topic | Payload | Action |
+|-------|---------|--------|
+| `winthing/desktop/commands/close_active_window` | - | Closes currently active window. |
+| `winthing/desktop/commands/set_display_sleep` | displaySleep:boolean | Puts the display to sleep (on true) or wakes it up (on false). |
 
 #### Keyboard
 
-**Topic:** winthing/keyboard/commands/press_keys<br>
-**Payload:** [key:string...]
-
-Simulates pressing of given set of keyboard keys. Keys are specified by name. List of available key names and aliases can be found [here](src/main/java/com/fatico/winthing/windows/input/KeyboardKey.java).
+| Topic | Payload | Action |
+|-------|---------|--------|
+| `winthing/keyboard/commands/press_keys` | [key:string...] | Simulates pressing of given set of keyboard keys. Keys are specified by name. List of available key names and aliases can be found [here](src/main/java/com/fatico/winthing/windows/input/KeyboardKey.java). |
 
 #### ATI Radeon display driver
 
-**Topic:** winthing/radeon/commands/set_best_resolution<br>
-**Payload:** -
-
-Sets the screen to the best available resolution.
-
----
-
-**Topic:** winthing/radeon/commands/set_resolution<br>
-**Payload:** [widthInPixels:integer, heightInPixels:integer]
-
-Sets the screen to the given resolution.
+| Topic | Payload | Action |
+|-------|---------|--------|
+| `winthing/radeon/commands/set_best_resolution` | - | Sets the screen to the best available resolution. |
+| `winthing/radeon/commands/set_resolution` | [widthInPixels:integer, heightInPixels:integer] | Sets the screen to the given resolution. |
 
 ## License
 
