@@ -42,13 +42,14 @@ Configuration parameters can be passed from command line or they can be placed i
 <tr><td>password</td><td>Password used when connecting to MQTT broker</td><td>mqtt</td></tr>
 <tr><td>clientid</td><td>Client ID to present to the broker</td><td>WinThing</td></tr>
 <tr><td>reconnect</td><td>Time interval between connection attempts in seconds</td><td>5</td></tr>
+<tr><td>prefix</td><td>Topic prefix to use with the MQTT broker</td><td>winthing</td></tr>
 </table>
 
 ### Command line parameters
 
 Example how to pass parameters from command line:
 
-	java -Dbroker="127.0.0.1:1883" -jar winthing-1.2.0.jar
+	java -Dbroker="127.0.0.1:1883" -jar winthing-1.3.0.jar
 
 ### winthing.conf
 
@@ -76,6 +77,10 @@ Example file:
 You can open application log by clicking on the tray icon. To log into **winthing.log** file in the current working directory run WinThing with the **-debug** parameter.
 
 	winthing.exe -debug
+
+## Multiple instances / computers
+
+If you intend to run WinThing on multiple devices, make sure you set the **prefix** parameter for each device. The default value is "winthing", eg. the topic for status is "winthing/system/online", your other computer would be "kitchenpc/system/online", your laptop "mylaptop/system/online" etc.
 
 ## Supported messages
 
