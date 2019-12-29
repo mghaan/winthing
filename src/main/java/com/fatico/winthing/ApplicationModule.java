@@ -1,5 +1,6 @@
 package com.fatico.winthing;
 
+import com.fatico.winthing.gui.WindowGui;
 import com.fatico.winthing.messaging.MessagingModule;
 import com.fatico.winthing.windows.WindowsModule;
 
@@ -24,6 +25,7 @@ public class ApplicationModule extends AbstractModule {
     @Override
     protected void configure() {
         bind(Gson.class).in(Singleton.class);
+        bind(WindowGui.class).in(Singleton.class);
 
         install(new MessagingModule());
         if (System.getProperty("os.name").toLowerCase().contains("win")) {

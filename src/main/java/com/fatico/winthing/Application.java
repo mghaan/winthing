@@ -43,11 +43,12 @@ public class Application {
 
             app.logger = LoggerFactory.getLogger(Application.class);
 
-            app.gui = new WindowGui();
-            app.gui.initialize();
-
             final Injector injector = Guice.createInjector(new ApplicationModule());
             final Engine engine = injector.getInstance(Engine.class);
+
+            app.gui = injector.getInstance(WindowGui.class);
+            app.gui.initialize();
+
             engine.run();
 
         } catch (final Throwable throwable) {

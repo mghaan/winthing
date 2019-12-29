@@ -7,7 +7,6 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import java.awt.AWTException;
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Image;
@@ -30,22 +29,16 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
-@SuppressWarnings("serial")
-public class WindowGui extends JFrame {
+public class WindowGui {
     private final String appName;
     private final String appVersion;
-    private final Map<Integer, Component> components = new HashMap<Integer, Component>();
+    private final Map<Gui, Object> components = new HashMap<Gui, Object>();
 
     public enum Gui {
-        TEXTAREA(0),
-        SCROLLBAR(1),
-        TRAYICON(2);
-
-        public final int key;
-
-        private Gui(int value) {
-            key = value;
-        }
+        WINDOW,
+        TEXTAREA,
+        SCROLLBAR,
+        TRAYICON;
     }
 
     public enum Actions {
@@ -61,26 +54,29 @@ public class WindowGui extends JFrame {
     }
 
     public void initialize() throws AWTException {
-        setTitle(appName + " " + appVersion);
-        setDefaultCloseOperation(HIDE_ON_CLOSE);
-        setVisible(false);
-        setLayout(new BorderLayout());
-        setResizable(false);
-        setPreferredSize(new Dimension(800, 530));
-        setSize(getPreferredSize());
+        JFrame window = new JFrame();
+        components.put(Gui.WINDOW, window);
+
+        window.setTitle(appName + " " + appVersion);
+        window.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+        window.setVisible(false);
+        window.setLayout(new BorderLayout());
+        window.setResizable(false);
+        window.setPreferredSize(new Dimension(800, 530));
+        window.setSize(window.getPreferredSize());
 
         JTextArea logs = new JTextArea();
         logs.setEditable(false);
         logs.setRows(25);
-        components.put(Gui.TEXTAREA.key, logs);
+        components.put(Gui.TEXTAREA, logs);
 
         JScrollPane scrolls = new JScrollPane(logs);
         scrolls.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-        getContentPane().add(scrolls, BorderLayout.NORTH);
-        components.put(Gui.SCROLLBAR.key, scrolls);
+        window.getContentPane().add(scrolls, BorderLayout.NORTH);
+        components.put(Gui.SCROLLBAR, scrolls);
 
         JPanel panel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        getContentPane().add(panel, BorderLayout.SOUTH);
+        window.getContentPane().add(panel, BorderLayout.SOUTH);
 
         JButton btnClose = new JButton("Close");
         btnClose.setToolTipText("Close this window");
@@ -93,6 +89,7 @@ public class WindowGui extends JFrame {
         panel.add(btnQuit);
 
         TrayIcon trayIcon = null;
+        components.put(Gui.TRAYICON, trayIcon);
         if (SystemTray.isSupported()) {
             PopupMenu popup = new PopupMenu();
 
@@ -122,48 +119,63 @@ public class WindowGui extends JFrame {
             trayIcon = new TrayIcon(scaled, appName + " " + appVersion, popup);
             trayIcon.addMouseListener(new MouseEventListener(this, Actions.EVENTS));
             tray.add(trayIcon);
+
+            components.put(Gui.TRAYICON, trayIcon);
         }
     }
 
     public void setIcon(boolean color) {
-        SystemTray tray = SystemTray.getSystemTray();
-        TrayIcon[] icons = tray.getTrayIcons();
-        if (icons.length > 0) {
+        TrayIcon icon = (TrayIcon)components.get(Gui.TRAYICON);
+        if (icon != null) {
             String name = color ? "favicon-green.png" : "favicon-red.png";
 
             URL url = getClass().getClassLoader().getResource(name);
             Image image = Toolkit.getDefaultToolkit().getImage(url);
 
+            SystemTray tray = SystemTray.getSystemTray();
             int trayWidth = tray.getTrayIconSize().width;
             int trayHeight = tray.getTrayIconSize().height;
             Image scaled = image.getScaledInstance(trayWidth, trayHeight, Image.SCALE_SMOOTH);
-            icons[0].setImage(scaled);
+            icon.setImage(scaled);
         }
     }
 
     public void reload() {
-        if (isVisible()) {
-            JTextArea area = (JTextArea)components.get(Gui.TEXTAREA.key);
+        JFrame window = (JFrame)components.get(Gui.WINDOW);
+
+        if (window.isVisible()) {
+            JTextArea area = (JTextArea)components.get(Gui.TEXTAREA);
             area.setText(ConsoleLogger.getEvents());
 
-            JScrollPane scroll = (JScrollPane)components.get(Gui.SCROLLBAR.key);
+            JScrollPane scroll = (JScrollPane)components.get(Gui.SCROLLBAR);
             scroll.getVerticalScrollBar().setValue(scroll.getVerticalScrollBar().getMaximum());
         }
     }
 
     public void open() {
-        pack();
-        setLocationRelativeTo(null);
-        setVisible(true);
+        JFrame window = (JFrame)components.get(Gui.WINDOW);
+        window.pack();
+        window.setLocationRelativeTo(null);
+        window.setVisible(true);
 
         reload();
     }
 
     public void close() {
-        setVisible(false);
+        JFrame window = (JFrame)components.get(Gui.WINDOW);
+        window.setVisible(false);
     }
 
     public void quit() {
+        TrayIcon icon = (TrayIcon)components.get(Gui.TRAYICON);
+        SystemTray tray = SystemTray.getSystemTray();
+        tray.remove(icon);
+
+        close();
+
+        JFrame window = (JFrame)components.get(Gui.WINDOW);
+        window.dispose();
+
         Application.quit();
     }
 
